@@ -55,9 +55,9 @@ func (s *WatermarkInfoServer) SetAllWatermarkInfo(ctx context.Context, req *pb.S
 		req.Username, req.OptionUserName, req.OptionDeviceName, req.OptionGPS, req.OptionTime, logo, expo)
 
 	if s.cfg.Watermarks == nil {
-		s.cfg.Watermarks = make(map[string]WatermarkConfig)
+		s.cfg.Watermarks = make(map[string]cfg.WatermarkConfig)
 	}
-	s.cfg.Watermarks[channelKey] = WatermarkConfig{
+	s.cfg.Watermarks[channelKey] = cfg.WatermarkConfig{
 		Username:         req.Username,
 		OptionUserName:   req.OptionUserName,
 		OptionDeviceName: req.OptionDeviceName,

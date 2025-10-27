@@ -190,11 +190,11 @@ func mqttIn_Status_Video_Handler(client mqtt.Client, msg mqtt.Message) {
 	}
 	if num < chanNum {
 		if cfg.AppConfig.Videos == nil {
-			cfg.AppConfig.Videos = make(map[string]VideoConfig)
+			cfg.AppConfig.Videos = make(map[string]cfg.VideoConfig)
 		}
 		videoConfig, exists := cfg.AppConfig.Videos[key]
 		if !exists {
-			videoConfig = VideoConfig{}
+			videoConfig = cfg.VideoConfig{}
 			Log.Println("Assign VideoConfig{}")
 		}
 		err := json.Unmarshal([]byte(msg.Payload()), &videoConfig)
@@ -223,11 +223,11 @@ func mqttIn_Status_IO_Handler(client mqtt.Client, msg mqtt.Message) {
 	case "io":
 		if parts[2] == "led" && num < chanNum {
 			if cfg.AppConfig.LEDs == nil {
-				cfg.AppConfig.LEDs = make(map[string]LEDConfig)
+				cfg.AppConfig.LEDs = make(map[string]cfg.LEDConfig)
 			}
 			ledConfig, exists := cfg.AppConfig.LEDs[key]
 			if !exists {
-				ledConfig = LEDConfig{}
+				ledConfig = cfg.LEDConfig{}
 				Log.Println("Assign LEDConfig{}")
 			}
 			err := json.Unmarshal([]byte(msg.Payload()), &ledConfig)
@@ -288,11 +288,11 @@ func mqttIn_Status_Watermark_Handler(client mqtt.Client, msg mqtt.Message) {
 	}
 	if num < chanNum {
 		if cfg.AppConfig.Watermarks == nil {
-			cfg.AppConfig.Watermarks = make(map[string]WatermarkConfig)
+			cfg.AppConfig.Watermarks = make(map[string]cfg.WatermarkConfig)
 		}
 		osdConfig, exists := cfg.AppConfig.Watermarks[key]
 		if !exists {
-			osdConfig = WatermarkConfig{}
+			osdConfig = cfg.WatermarkConfig{}
 			Log.Println("Assign WatermarkConfig{}")
 		}
 		err := json.Unmarshal([]byte(msg.Payload()), &osdConfig)

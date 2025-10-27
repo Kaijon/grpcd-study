@@ -16,9 +16,9 @@ type VideoInfoServer struct {
 func (s *VideoInfoServer) SetVideoSettings(ctx context.Context, in *pb.SetVideoSettingsRequest) (*pb.SetVideoSettingsResponse, error) {
 	channelKey := fmt.Sprintf("%d", in.Channel)
 	if s.cfg.Videos == nil {
-		s.cfg.Videos = make(map[string]VideoConfig)
+		s.cfg.Videos = make(map[string]cfg.VideoConfig)
 	}
-	s.cfg.Videos[channelKey] = VideoConfig{
+	s.cfg.Videos[channelKey] = cfg.VideoConfig{
 		Resolution:      in.Resolution,
 		StreamFormat:    in.StreamFormat,
 		BitRate:         in.BitRate,

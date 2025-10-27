@@ -240,7 +240,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 		}
 		jsonMsg, err := json.Marshal(msg)
 		if err != nil {
-			Log.Infof("Error marshalling JSON:", err)
+			Log.Infof("Error marshalling JSON: %v", err)
 		}
 		finalMessage := fmt.Sprintf("RESP:%s", string(jsonMsg))
 		stream.Send(&pb.FotaStatus{
@@ -256,7 +256,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 		}
 		jsonMsg, err := json.Marshal(msg)
 		if err != nil {
-			Log.Infof("Error marshalling JSON:", err)
+			Log.Infof("Error marshalling JSON: %v", err)
 		}
 		finalMessage := fmt.Sprintf("RESP:%s", string(jsonMsg))
 

@@ -27,7 +27,7 @@ func main() {
 	httpAddr := "0.0.0.0:8081"
 	swaggerDir := "./swagger"
 
-	configInit()
+	cfg.Init()
 	MqttInit()
 	go StartMqttInLoop()
 	StartMqttWorker()

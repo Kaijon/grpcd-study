@@ -17,9 +17,9 @@ func (s *LEDServer) SetLEDs(ctx context.Context, in *pb.SetLEDsRequest) (*pb.Set
 	channelKey := fmt.Sprintf("%d", in.Channel)
 	strStatus := in.StatusLedColor.String()
 	if s.cfg.LEDs == nil {
-		s.cfg.LEDs = make(map[string]LEDConfig)
+		s.cfg.LEDs = make(map[string]cfg.LEDConfig)
 	}
-	s.cfg.LEDs[channelKey] = LEDConfig{
+	s.cfg.LEDs[channelKey] = cfg.LEDConfig{
 		StatusLed: strStatus,
 		RecLedOn:  in.RecLedOn,
 	}
