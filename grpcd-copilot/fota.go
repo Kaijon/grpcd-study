@@ -56,6 +56,7 @@ const (
 type FotaServer struct {
 	pb.UnimplementedFotaServiceServer
 	mu sync.Mutex // To protect shared state across clients
+	cfg *cfg.Config
 }
 
 var clientID string
@@ -74,7 +75,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 	var finalGood int
 	var finalBad int
 
-	serverID := cfg.AppConfig.System.SerialNo
+	serverID := s.cfg.System.SerialNo
 
 	for {
 		chunk, err := stream.Recv()
