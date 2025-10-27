@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package canf22g2.grpc;
+import "google/api/annotations.proto";
+option go_package = "canf22g2/grpc";
+
+// Network
+message GetIPv4Request {}
+message GetIPv4Response {
+    string IPv4 = 1;
+}
+message UpdateIPv4Request {
+    string IPv4 = 1;
+}
+message UpdateIPv4Response {
+    string Message = 1;
+}
+
+message GetIPv6Request {}
+message GetIPv6Response {
+    string IPv6 = 1;
+}
+
+message GetDHCPRequest {}
+message GetDHCPResponse {
+    bool DHCP = 1;
+}
+message UpdateDHCPRequest {
+    bool DHCP = 1;
+}
+message UpdateDHCPResponse {
+    string Message = 1;
+}
+
+// GetAllNetworkInfo combines all network information into a single response
+message GetAllNetworkInfoRequest {}
+message GetAllNetworkInfoResponse {
+    string IPv4 = 1;
+    string IPv6 = 2;
+}
+
+service NetworkInfoService {
+    rpc GetIPv4(GetIPv4Request) returns (GetIPv4Response) {
+        option (google.api.http) = {
+            get: "/v1/network/ipv4"
+        };    
+    }
+    rpc UpdateIPv4(UpdateIPv4Request) returns (UpdateIPv4Response) {
+        option (google.api.http) = {
+            post: "/v1/network/ipv4"
+            body: "*"
+        };    
+    }
+    rpc GetIPv6(GetIPv6Request) returns (GetIPv6Response) {
+        option (google.api.http) = {
+            get: "/v1/network/ipv6"
+        };    
+    }
+    rpc GetAllNetworkInfo(GetAllNetworkInfoRequest) returns (GetAllNetworkInfoResponse) {
+        option (google.api.http) = {
+            get: "/v1/network/ip"
+        };    
+    }
+}
+

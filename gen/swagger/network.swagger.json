@@ -1,0 +1,189 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "network.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "NetworkInfoService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/network/ip": {
+      "get": {
+        "operationId": "NetworkInfoService_GetAllNetworkInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcGetAllNetworkInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "NetworkInfoService"
+        ]
+      }
+    },
+    "/v1/network/ipv4": {
+      "get": {
+        "operationId": "NetworkInfoService_GetIPv4",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcGetIPv4Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "NetworkInfoService"
+        ]
+      },
+      "post": {
+        "operationId": "NetworkInfoService_UpdateIPv4",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcUpdateIPv4Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/grpcUpdateIPv4Request"
+            }
+          }
+        ],
+        "tags": [
+          "NetworkInfoService"
+        ]
+      }
+    },
+    "/v1/network/ipv6": {
+      "get": {
+        "operationId": "NetworkInfoService_GetIPv6",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcGetIPv6Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "NetworkInfoService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "grpcGetAllNetworkInfoResponse": {
+      "type": "object",
+      "properties": {
+        "IPv4": {
+          "type": "string"
+        },
+        "IPv6": {
+          "type": "string"
+        }
+      }
+    },
+    "grpcGetIPv4Response": {
+      "type": "object",
+      "properties": {
+        "IPv4": {
+          "type": "string"
+        }
+      }
+    },
+    "grpcGetIPv6Response": {
+      "type": "object",
+      "properties": {
+        "IPv6": {
+          "type": "string"
+        }
+      }
+    },
+    "grpcUpdateIPv4Request": {
+      "type": "object",
+      "properties": {
+        "IPv4": {
+          "type": "string"
+        }
+      }
+    },
+    "grpcUpdateIPv4Response": {
+      "type": "object",
+      "properties": {
+        "Message": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

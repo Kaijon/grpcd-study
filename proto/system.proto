@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package canf22g2.grpc;
+import "google/api/annotations.proto";
+option go_package = "canf22g2/grpc";
+
+// AllSystemInfo
+message GetAllSystemInfoRequest {}
+message GetAllSystemInfoResponse {
+    string FWVersion = 1;
+    string Time = 2;  
+    string SerialNo = 3;
+    string SKUName = 4;
+    string DeviceName = 5;
+    string MAC = 6;
+}
+
+// SetTime
+message SetTimeRequest {
+    //Time format: 2024-08-22T15:00:02.574UTC+08:00 or 2024-08-22T15:00:02.574UTC+08:00DST
+    string Time = 1;
+}
+message SetTimeResponse {
+    string message = 1; 
+}
+
+// RunCmd
+message RunCmdRequest {
+    string Cmd = 1;
+}
+message RunCmdResponse {
+    string message = 1; 
+}
+
+message GetAlprRequest{
+    bool isEnabled = 1;
+}
+
+message GetAlprResponse{
+    bool isEnabled = 1;
+}
+
+message SetAlprRequest {
+    bool isEnabled = 1;
+}
+
+message SetAlprResponse {
+    bool isEnabled = 1;
+}
+
+service DeviceInfoService {
+    rpc GetAllSystemInfo(GetAllSystemInfoRequest) returns (GetAllSystemInfoResponse) {
+        option (google.api.http) = {
+            get: "/v1/system/info"
+        };        
+    }
+    rpc SetTime(SetTimeRequest) returns (SetTimeResponse) {
+        option (google.api.http) = {
+            post: "/v1/system/time"
+            body: "*"
+        };    
+    }
+    rpc RunCmd(RunCmdRequest) returns (RunCmdResponse) {
+        option (google.api.http) = {
+            post: "/v1/system/rc"
+            body: "*"
+        };    
+    }
+    rpc GetAlprStatus(GetAlprRequest) returns (GetAlprResponse) {
+        option (google.api.http) = {
+            get: "/v1/system/alpr/status"
+        };    
+    }
+    rpc SetAlprStatus(SetAlprRequest) returns (SetAlprResponse) {
+            option (google.api.http) = {
+            post: "/v1/system/alpr/status"
+            body: "*"
+        };
+    }
+}

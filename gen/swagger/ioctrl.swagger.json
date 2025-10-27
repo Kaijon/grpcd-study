@@ -1,0 +1,161 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "ioctrl.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "LEDService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/leds": {
+      "get": {
+        "operationId": "LEDService_GetLEDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcGetLEDsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "channel",
+            "description": "specify which channel to query",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "LEDService"
+        ]
+      },
+      "post": {
+        "operationId": "LEDService_SetLEDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcSetLEDsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/grpcSetLEDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "LEDService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "grpcColor": {
+      "type": "string",
+      "enum": [
+        "RED",
+        "GREEN"
+      ],
+      "default": "RED"
+    },
+    "grpcGetLEDsResponse": {
+      "type": "object",
+      "properties": {
+        "statusLedColor": {
+          "$ref": "#/definitions/grpcColor"
+        },
+        "recLedOn": {
+          "type": "boolean"
+        },
+        "channel": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "grpcSetLEDsRequest": {
+      "type": "object",
+      "properties": {
+        "statusLedColor": {
+          "$ref": "#/definitions/grpcColor",
+          "title": "set status LED color"
+        },
+        "recLedOn": {
+          "type": "boolean",
+          "title": "on/off recording led (true/false)"
+        },
+        "channel": {
+          "type": "integer",
+          "format": "int32",
+          "title": "channel 0 or 1"
+        }
+      }
+    },
+    "grpcSetLEDsResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

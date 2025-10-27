@@ -1,0 +1,209 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "video.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "VideoInfoService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/video": {
+      "get": {
+        "operationId": "VideoInfoService_GetVideoSettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcGetVideoSettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "channel",
+            "description": "Channel identifier",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "VideoInfoService"
+        ]
+      },
+      "post": {
+        "operationId": "VideoInfoService_SetVideoSettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcSetVideoSettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/grpcSetVideoSettingsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "VideoInfoService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "grpcGetVideoSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "Resolution": {
+          "type": "string"
+        },
+        "StreamFormat": {
+          "type": "string"
+        },
+        "BitRate": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "Fps": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "SubResolution": {
+          "type": "string"
+        },
+        "SubStreamFormat": {
+          "type": "string"
+        },
+        "SubBitRate": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "SubType": {
+          "type": "string"
+        },
+        "SubFps": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "MirrorAction": {
+          "type": "string"
+        }
+      }
+    },
+    "grpcSetVideoSettingsRequest": {
+      "type": "object",
+      "properties": {
+        "Resolution": {
+          "type": "string"
+        },
+        "StreamFormat": {
+          "type": "string"
+        },
+        "BitRate": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "Fps": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "channel": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "SubResolution": {
+          "type": "string"
+        },
+        "SubStreamFormat": {
+          "type": "string"
+        },
+        "SubBitRate": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "SubType": {
+          "type": "string"
+        },
+        "SubFps": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "MirrorAction": {
+          "type": "string"
+        }
+      },
+      "title": "Video"
+    },
+    "grpcSetVideoSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

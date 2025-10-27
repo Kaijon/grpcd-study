@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # The 'builder' service is for all your Go development and Protobuf generation tasks
+  goGo:
+    # Build the image using the local Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Name the resulting image for easy reference
+    image: go-protoc-env:1.25.1
+    # Mount the current project directory into the container's /app directory
+    volumes:
+      - .:/app
+    # Set the working directory to the mounted volume
+    working_dir: /app
+    # Keep the container running in the background for you to execute commands
+    # You can remove this or change to 'command: "tail -f /dev/null"' if preferred
+    # but 'sh' is good for interactive use.
+    # entrypoint: sh
+
+    # Optional: If you need a specific user (e.g., to match host file permissions)
+    # user: ${UID:-1000}:${GID:-1000}
+    
+    # Keep the container running in the background for you to execute commands
+    #entrypoint: sh
+    
+    #command: tail -f /dev/null
+# --- Usage Example ---
+# 1. Build the image:
+#    docker-compose build
+#
+# 2. Run a command (e.g., compile your Go code or generate Protobuf files):
+#    docker-compose run --rm builder go build -o myapp ./cmd/main.go
+#
+# 3. Open an interactive shell in the container:
+#    docker-compose run --rm builder bash

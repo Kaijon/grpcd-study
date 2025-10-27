@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package canf22g2.grpc;
+import "google/api/annotations.proto";
+//import "protoc-gen-openapiv2/options/annotations.proto";
+option go_package = "canf22g2/grpc";
+
+enum Color {
+    RED = 0;
+    GREEN = 1;
+}
+
+message SetLEDsRequest {
+    Color statusLedColor = 1; // set status LED color
+    bool recLedOn = 2;        // on/off recording led (true/false)
+    int32 channel = 3;        // channel 0 or 1
+}
+
+message SetLEDsResponse {
+    string message = 1;
+}
+
+message GetLEDsRequest {
+    int32 channel = 1;        // specify which channel to query
+}
+
+message GetLEDsResponse {
+    Color statusLedColor = 1; 
+    bool recLedOn = 2;        
+    int32 channel = 3;        
+}
+
+service LEDService {
+    rpc SetLEDs(SetLEDsRequest) returns (SetLEDsResponse) {
+        option (google.api.http) = {
+            post: "/v1/leds"
+            body: "*"
+        };
+    }
+    rpc GetLEDs(GetLEDsRequest) returns (GetLEDsResponse) {
+        option (google.api.http) = {
+            get: "/v1/leds"
+        };
+
+    }
+}

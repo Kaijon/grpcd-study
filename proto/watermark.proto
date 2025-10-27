@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package canf22g2.grpc;
+option go_package = "canf22g2/grpc";
+import "google/api/annotations.proto";
+import "wrappers.proto";
+
+// Watermark information with channel differentiation
+message GetAllWatermarkInfoRequest {
+    int32 channel = 1; // Channel identifier
+}
+
+message GetAllWatermarkInfoResponse {
+    string username = 1;
+    bool OptionUserName = 2;
+    bool OptionDeviceName = 3;
+    bool OptionGPS = 4;
+    bool OptionTime = 5;
+    bool OptionLogo = 6;
+    bool OptionExposure = 7;
+}
+
+message SetAllWatermarkInfoRequest {
+    string username = 1;
+    bool OptionUserName = 2;
+    bool OptionDeviceName = 3;
+    bool OptionGPS = 4;
+    bool OptionTime = 5;
+    google.protobuf.BoolValue OptionLogo = 6;
+    google.protobuf.BoolValue OptionExposure = 7;    
+    int32 channel = 8; // Channel identifier
+}
+
+message SetAllWatermarkInfoResponse {
+    string Message = 1;
+}
+
+service WatermarkInfoService {
+    rpc GetAllWatermarkInfo(GetAllWatermarkInfoRequest) returns (GetAllWatermarkInfoResponse) {
+        option (google.api.http) = {
+            get: "/v1/watermark"
+        };     
+    }
+    rpc SetAllWatermarkInfo(SetAllWatermarkInfoRequest) returns (SetAllWatermarkInfoResponse) {
+	option (google.api.http) = {
+            post: "/v1/watermark"
+            body: "*"
+        }; 
+    }
+}

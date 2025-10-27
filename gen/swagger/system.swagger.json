@@ -1,0 +1,278 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "system.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "DeviceInfoService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/system/alpr/status": {
+      "get": {
+        "operationId": "DeviceInfoService_GetAlprStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcGetAlprResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "isEnabled",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "DeviceInfoService"
+        ]
+      },
+      "post": {
+        "operationId": "DeviceInfoService_SetAlprStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcSetAlprResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/grpcSetAlprRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DeviceInfoService"
+        ]
+      }
+    },
+    "/v1/system/info": {
+      "get": {
+        "operationId": "DeviceInfoService_GetAllSystemInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcGetAllSystemInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "DeviceInfoService"
+        ]
+      }
+    },
+    "/v1/system/rc": {
+      "post": {
+        "operationId": "DeviceInfoService_RunCmd",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcRunCmdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/grpcRunCmdRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DeviceInfoService"
+        ]
+      }
+    },
+    "/v1/system/time": {
+      "post": {
+        "operationId": "DeviceInfoService_SetTime",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcSetTimeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/grpcSetTimeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DeviceInfoService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "grpcGetAllSystemInfoResponse": {
+      "type": "object",
+      "properties": {
+        "FWVersion": {
+          "type": "string"
+        },
+        "Time": {
+          "type": "string"
+        },
+        "SerialNo": {
+          "type": "string"
+        },
+        "SKUName": {
+          "type": "string"
+        },
+        "DeviceName": {
+          "type": "string"
+        },
+        "MAC": {
+          "type": "string"
+        }
+      }
+    },
+    "grpcGetAlprResponse": {
+      "type": "object",
+      "properties": {
+        "isEnabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "grpcRunCmdRequest": {
+      "type": "object",
+      "properties": {
+        "Cmd": {
+          "type": "string"
+        }
+      },
+      "title": "RunCmd"
+    },
+    "grpcRunCmdResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "grpcSetAlprRequest": {
+      "type": "object",
+      "properties": {
+        "isEnabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "grpcSetAlprResponse": {
+      "type": "object",
+      "properties": {
+        "isEnabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "grpcSetTimeRequest": {
+      "type": "object",
+      "properties": {
+        "Time": {
+          "type": "string",
+          "title": "Time format: 2024-08-22T15:00:02.574UTC+08:00 or 2024-08-22T15:00:02.574UTC+08:00DST"
+        }
+      },
+      "title": "SetTime"
+    },
+    "grpcSetTimeResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

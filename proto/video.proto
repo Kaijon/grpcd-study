@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package canf22g2.grpc;
+import "google/api/annotations.proto";
+option go_package = "canf22g2/grpc";
+
+// Video
+message SetVideoSettingsRequest {
+    string Resolution = 1; 
+    string StreamFormat = 2;
+    uint32 BitRate = 3;
+    string Type = 4;
+    uint32 Fps = 5;
+    int32 channel = 6;
+    string SubResolution = 7;
+    string SubStreamFormat = 8;
+    uint32 SubBitRate = 9;
+    string SubType = 10;
+    uint32 SubFps = 11;       
+    string MirrorAction = 12;
+}
+
+message SetVideoSettingsResponse {
+    string message = 1; 
+}
+
+message GetVideoSettingsRequest {
+    int32 channel = 1; // Channel identifier
+}
+
+message GetVideoSettingsResponse {
+    string Resolution = 1;
+    string StreamFormat = 2;
+    uint32 BitRate = 3;
+    string Type = 4;
+    uint32 Fps = 5;
+    string SubResolution = 6;
+    string SubStreamFormat = 7;
+    uint32 SubBitRate = 8;
+    string SubType = 9;
+    uint32 SubFps = 10;    
+    string MirrorAction = 11;
+}
+
+service VideoInfoService {
+    rpc SetVideoSettings(SetVideoSettingsRequest) returns (SetVideoSettingsResponse) {
+            option (google.api.http) = {
+            post: "/v1/video"
+            body: "*"
+        };    
+    }
+    rpc GetVideoSettings(GetVideoSettingsRequest) returns (GetVideoSettingsResponse) {
+        option (google.api.http) = {
+            get: "/v1/video"
+        };       
+    }
+}

@@ -1,0 +1,177 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "watermark.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "WatermarkInfoService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/watermark": {
+      "get": {
+        "operationId": "WatermarkInfoService_GetAllWatermarkInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcGetAllWatermarkInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "channel",
+            "description": "Channel identifier",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "WatermarkInfoService"
+        ]
+      },
+      "post": {
+        "operationId": "WatermarkInfoService_SetAllWatermarkInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpcSetAllWatermarkInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/grpcSetAllWatermarkInfoRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WatermarkInfoService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "grpcGetAllWatermarkInfoResponse": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "OptionUserName": {
+          "type": "boolean"
+        },
+        "OptionDeviceName": {
+          "type": "boolean"
+        },
+        "OptionGPS": {
+          "type": "boolean"
+        },
+        "OptionTime": {
+          "type": "boolean"
+        },
+        "OptionLogo": {
+          "type": "boolean"
+        },
+        "OptionExposure": {
+          "type": "boolean"
+        }
+      }
+    },
+    "grpcSetAllWatermarkInfoRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "OptionUserName": {
+          "type": "boolean"
+        },
+        "OptionDeviceName": {
+          "type": "boolean"
+        },
+        "OptionGPS": {
+          "type": "boolean"
+        },
+        "OptionTime": {
+          "type": "boolean"
+        },
+        "OptionLogo": {
+          "type": "boolean"
+        },
+        "OptionExposure": {
+          "type": "boolean"
+        },
+        "channel": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Channel identifier"
+        }
+      }
+    },
+    "grpcSetAllWatermarkInfoResponse": {
+      "type": "object",
+      "properties": {
+        "Message": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
