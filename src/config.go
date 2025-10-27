@@ -101,125 +101,14 @@ func SaveAppConfig(config Config, filename string) error {
 }
 
 func SaveAppConfigDefault() error {
-	//filename := "config.json"
-	//if runtime.GOARCH == "amd64" {
-	//	filename = "fake.data"
-	//}
-	//return SaveAppConfig(AppConfig, filename)
-	return nil
-}
+	package main
 
-func LoadConfigDefault() {
-	filename := "config.json"
+	import (
+		cfg "grpcd/config"
+	)
+
+	// Keep a reference to the shared config package to avoid duplicate
+	// declarations in this tree. Other files should import cfg and use
+	// cfg.AppConfig directly. This file exists as a small shim only.
+	var _ = cfg.AppConfig
 	if runtime.GOARCH == "amd64" {
-		filename = "fake.data"
-	}
-
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		AppConfig = Config{ // Use the global AppConfig variable
-			LEDs: map[string]LEDConfig{
-				"0": {StatusLed: "RED", RecLedOn: true},
-				"1": {StatusLed: "GREEN", RecLedOn: false},
-			},
-			Network: NetworkConfig{
-				IPv4: "192.168.5.24",
-				IPv6: "3001:0db8:85a3:0000:0000:8a2e:0370:7334",
-			},
-			System: SystemConfig{
-				FWVersion:  "0.0.0.1",
-				Time:       "2024-08-22T15:00:02.574UTC+08:00",
-				SerialNo:   "WMXNF222G2X0",
-				SKUName:    "CA-NF22G2",
-				DeviceName: "WMXNF222G2X0",
-				MAC:        "02:00:01:00:01:7B",
-			},
-			Videos: map[string]VideoConfig{
-				"0": {Resolution: "2560x1080", StreamFormat: "h265", BitRate: 12, Type: "vbr", Fps: 30,
-					SubResolution: "1280x720", SubStreamFormat: "h264", SubBitRate: 4, SubType: "vbr", SubFps: 30, MirrorAction: "normal"},
-
-				"1": {Resolution: "2560x1080", StreamFormat: "h265", BitRate: 12, Type: "vbr", Fps: 30,
-					SubResolution: "1280x720", SubStreamFormat: "h264", SubBitRate: 4, SubType: "vbr", SubFps: 30, MirrorAction: "normal"},
-			},
-			Watermarks: map[string]WatermarkConfig{
-				"0": {
-					Username:         "DefaultUser",
-					OptionUserName:   true,
-					OptionDeviceName: true,
-					OptionGPS:        true,
-					OptionTime:       true,
-					OptionLogo:       true,
-				},
-				"1": {
-					Username:         "DefaultUser",
-					OptionUserName:   true,
-					OptionDeviceName: true,
-					OptionGPS:        true,
-					OptionTime:       true,
-					OptionLogo:       true,
-				},
-			},
-			DayNightMode: SenserConfig{
-				Mode: "day",
-				Lux:  128,
-			},
-		}
-
-		if err := SaveAppConfigDefault(); err != nil {
-			log.Fatalf("Failed to create default config file: %v", err)
-		}
-	} else {
-		LoadConfig(filename)
-	}
-	fmt.Println("Device Name:", AppConfig.System.DeviceName)
-}
-
-func configInit() {
-	Log.Info("configInit Run")
-	AppConfig = Config{ // Use the global AppConfig variable
-		LEDs: map[string]LEDConfig{
-			"0": {StatusLed: "RED", RecLedOn: true},
-			"1": {StatusLed: "GREEN", RecLedOn: false},
-		},
-		Network: NetworkConfig{
-			IPv4: "192.168.5.24",
-			IPv6: "3001:0db8:85a3:0000:0000:8a2e:0370:7334",
-		},
-		System: SystemConfig{
-			FWVersion:  "0.0.0.1",
-			Time:       "2024-08-22T15:00:02.574UTC+08:00",
-			SerialNo:   "WMXNF222G2X0",
-			SKUName:    "CA-NF22G2",
-			DeviceName: "WMXNF222G2X0",
-			MAC:        "02:00:01:00:01:7B",
-		},
-		Videos: map[string]VideoConfig{
-			"0": {Resolution: "2560x1080", StreamFormat: "h265", BitRate: 12, Type: "vbr", Fps: 30,
-				SubResolution: "1280x720", SubStreamFormat: "h264", SubBitRate: 4, SubType: "vbr", SubFps: 30, MirrorAction: "normal"},
-
-			"1": {Resolution: "2560x1080", StreamFormat: "h265", BitRate: 12, Type: "vbr", Fps: 30,
-				SubResolution: "1280x720", SubStreamFormat: "h264", SubBitRate: 4, SubType: "vbr", SubFps: 30, MirrorAction: "normal"},
-		},
-		Watermarks: map[string]WatermarkConfig{
-			"0": {
-				Username:         "DefaultUser",
-				OptionUserName:   true,
-				OptionDeviceName: true,
-				OptionGPS:        true,
-				OptionTime:       true,
-				OptionLogo:       true,
-			},
-			"1": {
-				Username:         "DefaultUser",
-				OptionUserName:   true,
-				OptionDeviceName: true,
-				OptionGPS:        true,
-				OptionTime:       true,
-				OptionLogo:       true,
-			},
-		},
-		DayNightMode: SenserConfig{
-			Mode: "day",
-			Lux:  128,
-		},
-	}
-}

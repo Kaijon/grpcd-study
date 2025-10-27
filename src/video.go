@@ -3,20 +3,22 @@ package main
 import (
 	"context"
 	"fmt"
+	cfg "grpcd/config"
 	pb "grpcd/canf22g2/grpc"
 	"time"
 )
 
 type VideoInfoServer struct {
 	pb.UnimplementedVideoInfoServiceServer
+	cfg *cfg.Config
 }
 
 func (s *VideoInfoServer) SetVideoSettings(ctx context.Context, in *pb.SetVideoSettingsRequest) (*pb.SetVideoSettingsResponse, error) {
 	channelKey := fmt.Sprintf("%d", in.Channel)
-	if AppConfig.Videos == nil {
-		AppConfig.Videos = make(map[string]VideoConfig)
+	if s.cfg.Videos == nil {
+		s.cfg.Videos = make(map[string]VideoConfig)
 	}
-	AppConfig.Videos[channelKey] = VideoConfig{
+	s.cfg.Videos[channelKey] = VideoConfig{
 		Resolution:      in.Resolution,
 		StreamFormat:    in.StreamFormat,
 		BitRate:         in.BitRate,
@@ -49,7 +51,7 @@ func (s *VideoInfoServer) SetVideoSettings(ctx context.Context, in *pb.SetVideoS
 func (s *VideoInfoServer) GetVideoSettings(ctx context.Context, in *pb.GetVideoSettingsRequest) (*pb.GetVideoSettingsResponse, error) {
 	Log.Info(">>Run")
 	channelKey := fmt.Sprintf("%d", in.Channel)
-	videoConfig, ok := AppConfig.Videos[channelKey]
+	videoConfig, ok := s.cfg.Videos[channelKey]
 	if !ok {
 		return nil, fmt.Errorf("video settings not found for channel %s", channelKey)
 	}

@@ -10,15 +10,16 @@ import (
 
 type LEDServer struct {
 	pb.UnimplementedLEDServiceServer
+	cfg *cfg.Config
 }
 
 func (s *LEDServer) SetLEDs(ctx context.Context, in *pb.SetLEDsRequest) (*pb.SetLEDsResponse, error) {
 	channelKey := fmt.Sprintf("%d", in.Channel)
 	strStatus := in.StatusLedColor.String()
-	if cfg.AppConfig.LEDs == nil {
-		cfg.AppConfig.LEDs = make(map[string]cfg.LEDConfig)
+	if s.cfg.LEDs == nil {
+		s.cfg.LEDs = make(map[string]cfg.LEDConfig)
 	}
-	cfg.AppConfig.LEDs[channelKey] = cfg.LEDConfig{
+	s.cfg.LEDs[channelKey] = cfg.LEDConfig{
 		StatusLed: strStatus,
 		RecLedOn:  in.RecLedOn,
 	}
@@ -39,7 +40,7 @@ func (s *LEDServer) SetLEDs(ctx context.Context, in *pb.SetLEDsRequest) (*pb.Set
 func (s *LEDServer) GetLEDs(ctx context.Context, in *pb.GetLEDsRequest) (*pb.GetLEDsResponse, error) {
 	Log.Info(">>Run")
 	channelKey := fmt.Sprintf("%d", in.Channel)
-	ledConfig, ok := cfg.AppConfig.LEDs[channelKey]
+	ledConfig, ok := s.cfg.LEDs[channelKey]
 	if !ok {
 		return nil, fmt.Errorf("channel %s not found", channelKey)
 	}

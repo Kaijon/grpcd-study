@@ -86,8 +86,8 @@ func main() {
 	}
 	srv := grpc.NewServer()
 
-	// register statusLED server
-	ledServer := &LEDServer{}
+	// register statusLED server (inject config)
+	ledServer := &LEDServer{cfg: &cfg.AppConfig}
 	pb.RegisterLEDServiceServer(srv, ledServer)
 
 	// register DeviceInfo server
