@@ -10,12 +10,13 @@ import (
 
 type WatermarkInfoServer struct {
 	pb.UnimplementedWatermarkInfoServiceServer
+	cfg *cfg.Config
 }
 
 func (s *WatermarkInfoServer) GetAllWatermarkInfo(ctx context.Context, req *pb.GetAllWatermarkInfoRequest) (*pb.GetAllWatermarkInfoResponse, error) {
 	Log.Info(">>Run")
 	channelKey := fmt.Sprintf("%d", req.Channel)
-	watermarkConfig, ok := cfg.AppConfig.Watermarks[channelKey]
+	watermarkConfig, ok := s.cfg.Watermarks[channelKey]
 	if !ok {
 		return nil, fmt.Errorf("watermark settings not found for channel %s", channelKey)
 	}
@@ -41,22 +42,22 @@ func (s *WatermarkInfoServer) SetAllWatermarkInfo(ctx context.Context, req *pb.S
 	if req.OptionLogo != nil {
 		logo = req.OptionLogo.GetValue()
 	} else {
-		logo = cfg.AppConfig.Watermarks[channelKey].OptionLogo
+	logo = s.cfg.Watermarks[channelKey].OptionLogo
 	}
 
 	if req.OptionExposure != nil {
 		expo = req.OptionExposure.GetValue()
 	} else {
-		expo = cfg.AppConfig.Watermarks[channelKey].OptionExposure
+	expo = s.cfg.Watermarks[channelKey].OptionExposure
 	}
 
 	strTmp := fmt.Sprintf("{\"Username\":\"%s\", \"OptionUserName\":%v, \"OptionDeviceName\":%v,\"OptionGPS\":%v,\"OptionTime\":%v,\"OptionLogo\":%v,\"OptionExposure\":%v}",
 		req.Username, req.OptionUserName, req.OptionDeviceName, req.OptionGPS, req.OptionTime, logo, expo)
 
-	if cfg.AppConfig.Watermarks == nil {
-		cfg.AppConfig.Watermarks = make(map[string]cfg.WatermarkConfig)
+	if s.cfg.Watermarks == nil {
+		s.cfg.Watermarks = make(map[string]cfg.WatermarkConfig)
 	}
-	cfg.AppConfig.Watermarks[channelKey] = cfg.WatermarkConfig{
+	s.cfg.Watermarks[channelKey] = cfg.WatermarkConfig{
 		Username:         req.Username,
 		OptionUserName:   req.OptionUserName,
 		OptionDeviceName: req.OptionDeviceName,

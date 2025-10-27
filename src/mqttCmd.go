@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	cfg "grpcd/config"
 )
 
 type Params struct {
@@ -24,9 +25,9 @@ type Params struct {
 		Value bool `json:"Enable"`
 	}
 
-	IO        map[string]LEDConfig       `json:"io"`
-	Video     map[string]VideoConfig     `json:"video"`
-	Watermark map[string]WatermarkConfig `json:"watermark"`
+	IO        map[string]cfg.LEDConfig       `json:"io"`
+	Video     map[string]cfg.VideoConfig     `json:"video"`
+	Watermark map[string]cfg.WatermarkConfig `json:"watermark"`
 }
 
 var gMqttCmd Params

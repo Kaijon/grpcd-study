@@ -3,38 +3,40 @@ package main
 import (
 	"context"
 	"fmt"
+	cfg "grpcd/config"
 	pb "grpcd/canf22g2/grpc"
 	"time"
 )
 
 type NetworkInfoServer struct {
 	pb.UnimplementedNetworkInfoServiceServer
+	cfg *cfg.Config
 }
 
 func (s *NetworkInfoServer) GetIPv4(ctx context.Context, in *pb.GetIPv4Request) (*pb.GetIPv4Response, error) {
 	Log.Info(">>Run")
 	return &pb.GetIPv4Response{
-		IPv4: AppConfig.Network.IPv4,
+		IPv4: s.cfg.Network.IPv4,
 	}, nil
 }
 
 func (s *NetworkInfoServer) GetIPv6(ctx context.Context, in *pb.GetIPv6Request) (*pb.GetIPv6Response, error) {
 	Log.Info(">>Run")
 	return &pb.GetIPv6Response{
-		IPv6: AppConfig.Network.IPv6,
+		IPv6: s.cfg.Network.IPv6,
 	}, nil
 }
 
 func (s *NetworkInfoServer) GetAllNetworkInfo(ctx context.Context, in *pb.GetAllNetworkInfoRequest) (*pb.GetAllNetworkInfoResponse, error) {
 	Log.Info(">>Run")
 	return &pb.GetAllNetworkInfoResponse{
-		IPv4: AppConfig.Network.IPv4,
-		IPv6: AppConfig.Network.IPv6,
+		IPv4: s.cfg.Network.IPv4,
+		IPv6: s.cfg.Network.IPv6,
 	}, nil
 }
 
 func (s *NetworkInfoServer) UpdateIPv4(ctx context.Context, in *pb.UpdateIPv4Request) (*pb.UpdateIPv4Response, error) {
-	AppConfig.Network.IPv4 = in.IPv4
+	s.cfg.Network.IPv4 = in.IPv4
 	strTmp := fmt.Sprintf("{\"IPv4\":\"%v\"}", in.IPv4)
 	msg := MqttMessage{
 		Topic:   "config/network",

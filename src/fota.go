@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	cfg "grpcd/config"
 	pb "grpcd/canf22g2/grpc"
 	"io"
 	"os"
@@ -55,6 +56,7 @@ const (
 type FotaServer struct {
 	pb.UnimplementedFotaServiceServer
 	mu sync.Mutex // To protect shared state across clients
+	cfg *cfg.Config
 }
 
 var clientID string
@@ -73,7 +75,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 	var finalGood int
 	var finalBad int
 
-	serverID := AppConfig.System.SerialNo
+	serverID := s.cfg.System.SerialNo
 
 	for {
 		chunk, err := stream.Recv()
@@ -238,7 +240,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 		}
 		jsonMsg, err := json.Marshal(msg)
 		if err != nil {
-			Log.Infof("Error marshalling JSON:", err)
+			Log.Infof("Error marshalling JSON: %v", err)
 		}
 		finalMessage := fmt.Sprintf("RESP:%s", string(jsonMsg))
 		stream.Send(&pb.FotaStatus{
@@ -254,7 +256,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 		}
 		jsonMsg, err := json.Marshal(msg)
 		if err != nil {
-			Log.Infof("Error marshalling JSON:", err)
+			Log.Infof("Error marshalling JSON: %v", err)
 		}
 		finalMessage := fmt.Sprintf("RESP:%s", string(jsonMsg))
 
