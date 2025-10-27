@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	pb "grpcd/canf22g2/grpc"
+	cfg "grpcd/config"
 	"os"
 	"strconv"
 	"strings"
@@ -120,17 +121,17 @@ func (s *DeviceInfoServer) GetAllSystemInfo(ctx context.Context, in *pb.GetAllSy
 	Log.Infof("Get current time : %s", currentTimeStr)
 
 	return &pb.GetAllSystemInfoResponse{
-		FWVersion:  AppConfig.System.FWVersion,
+		FWVersion:  cfg.AppConfig.System.FWVersion,
 		Time:       currentTimeStr ,
-		SerialNo:   AppConfig.System.SerialNo,
-		SKUName:    AppConfig.System.SKUName,
-		DeviceName: AppConfig.System.DeviceName,
-		MAC:        AppConfig.System.MAC,
+		SerialNo:   cfg.AppConfig.System.SerialNo,
+		SKUName:    cfg.AppConfig.System.SKUName,
+		DeviceName: cfg.AppConfig.System.DeviceName,
+		MAC:        cfg.AppConfig.System.MAC,
 	}, nil
 }
 
 func (s *DeviceInfoServer) SetTime(ctx context.Context, in *pb.SetTimeRequest) (*pb.SetTimeResponse, error) {
-	AppConfig.System.Time = in.Time
+	cfg.AppConfig.System.Time = in.Time
 	strTmp := fmt.Sprintf("{\"time\":\"%s\"}", in.Time)
 	msg := MqttMessage{
 		Topic:   "config/system/time",
@@ -159,7 +160,7 @@ func (s *DeviceInfoServer) RunCmd(ctx context.Context, in *pb.RunCmdRequest) (*p
 }
 
 func (s *DeviceInfoServer) SetAlprStatus(ctx context.Context, in *pb.SetAlprRequest) (*pb.SetAlprResponse, error) {
-	AppConfig.System.AlprEnabled = in.IsEnabled
+	cfg.AppConfig.System.AlprEnabled = in.IsEnabled
 	strTmp := fmt.Sprintf("{\"Enable\":\"%v\"}", in.IsEnabled)
 	msg := MqttMessage{
 		Topic:   "config/alpr",
@@ -170,10 +171,10 @@ func (s *DeviceInfoServer) SetAlprStatus(ctx context.Context, in *pb.SetAlprRequ
 	case <-time.After(50 * time.Millisecond):
 		Log.Warnf("Timed out sending message: %v", msg)
 	}
-	return &pb.SetAlprResponse{IsEnabled: AppConfig.System.AlprEnabled}, nil
+	return &pb.SetAlprResponse{IsEnabled: cfg.AppConfig.System.AlprEnabled}, nil
 }
 
 func (s *DeviceInfoServer) GetAlprStatus(ctx context.Context, in *pb.GetAlprRequest) (*pb.GetAlprResponse, error) {
-	Log.Infof("ALPR enable=%v", AppConfig.System.AlprEnabled)
-	return &pb.GetAlprResponse{IsEnabled: AppConfig.System.AlprEnabled}, nil
+	Log.Infof("ALPR enable=%v", cfg.AppConfig.System.AlprEnabled)
+	return &pb.GetAlprResponse{IsEnabled: cfg.AppConfig.System.AlprEnabled}, nil
 }

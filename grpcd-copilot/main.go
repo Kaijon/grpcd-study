@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	pb "grpcd/canf22g2/grpc"
+	cfg "grpcd/config"
 	"io"
 	"net"
 	"net/http"
@@ -26,7 +27,7 @@ func main() {
 	httpAddr := "0.0.0.0:8081"
 	swaggerDir := "./swagger"
 
-	configInit()
+	cfg.Init()
 	MqttInit()
 	go StartMqttInLoop()
 	StartMqttWorker()
