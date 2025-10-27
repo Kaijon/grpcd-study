@@ -10,6 +10,7 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/sirupsen/logrus"
+	cfg "grpcd/config"
 )
 
 type Client struct {
@@ -157,21 +158,21 @@ func monitorIn(c mqtt.Client, msg mqtt.Message) {
 
 func mqttIn_InfoHandler(client mqtt.Client, msg mqtt.Message) {
 	Log.Debugf("Recv topic: %s, data: %s", msg.Topic(), msg.Payload())
-	json.Unmarshal([]byte(msg.Payload()), &AppConfig.System)
+	json.Unmarshal([]byte(msg.Payload()), &cfg.AppConfig.System)
 
-	Log.Infof("Firmware Version: %s\n", AppConfig.System.FWVersion)
-	Log.Infof("Time: %s\n", AppConfig.System.Time)
-	Log.Infof("Serial Number: %s\n", AppConfig.System.SerialNo)
-	Log.Infof("SKU Name: %s\n", AppConfig.System.SKUName)
-	Log.Infof("Device Name: %s\n", AppConfig.System.DeviceName)
-	Log.Infof("MAC: %s\n", AppConfig.System.MAC)
-	Log.Infof("AlprEnabled: %v\n", AppConfig.System.AlprEnabled)
+	Log.Infof("Firmware Version: %s\n", cfg.AppConfig.System.FWVersion)
+	Log.Infof("Time: %s\n", cfg.AppConfig.System.Time)
+	Log.Infof("Serial Number: %s\n", cfg.AppConfig.System.SerialNo)
+	Log.Infof("SKU Name: %s\n", cfg.AppConfig.System.SKUName)
+	Log.Infof("Device Name: %s\n", cfg.AppConfig.System.DeviceName)
+	Log.Infof("MAC: %s\n", cfg.AppConfig.System.MAC)
+	Log.Infof("AlprEnabled: %v\n", cfg.AppConfig.System.AlprEnabled)
 }
 
 func mqttIn_Status_AlprHandler(client mqtt.Client, msg mqtt.Message) {
 	Log.Debugf("Recv topic: %s, data: %s", msg.Topic(), msg.Payload())
-	json.Unmarshal([]byte(msg.Payload()), &AppConfig.System)
-	Log.Infof("Alpr: %v\n", AppConfig.System.AlprEnabled)
+	json.Unmarshal([]byte(msg.Payload()), &cfg.AppConfig.System)
+	Log.Infof("Alpr: %v\n", cfg.AppConfig.System.AlprEnabled)
 }
 
 func mqttIn_Status_Video_Handler(client mqtt.Client, msg mqtt.Message) {
@@ -188,20 +189,20 @@ func mqttIn_Status_Video_Handler(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 	if num < chanNum {
-		if AppConfig.Videos == nil {
-			AppConfig.Videos = make(map[string]VideoConfig)
+		if cfg.AppConfig.Videos == nil {
+			cfg.AppConfig.Videos = make(map[string]cfg.VideoConfig)
 		}
-		videoConfig, exists := AppConfig.Videos[key]
+		videoConfig, exists := cfg.AppConfig.Videos[key]
 		if !exists {
-			videoConfig = VideoConfig{}
+			videoConfig = cfg.VideoConfig{}
 			Log.Println("Assign VideoConfig{}")
 		}
 		err := json.Unmarshal([]byte(msg.Payload()), &videoConfig)
 		if err != nil {
 			Log.Infof("Error unmarshaling JSON:%v", err)
 		}
-		AppConfig.Videos[key] = videoConfig
-		Log.Println(AppConfig.Videos[key])
+		cfg.AppConfig.Videos[key] = videoConfig
+		Log.Println(cfg.AppConfig.Videos[key])
 	} else {
 		Log.Printf("Invalid Channel")
 	}
@@ -221,19 +222,19 @@ func mqttIn_Status_IO_Handler(client mqtt.Client, msg mqtt.Message) {
 	switch parts[1] {
 	case "io":
 		if parts[2] == "led" && num < chanNum {
-			if AppConfig.LEDs == nil {
-				AppConfig.LEDs = make(map[string]LEDConfig)
+			if cfg.AppConfig.LEDs == nil {
+				cfg.AppConfig.LEDs = make(map[string]cfg.LEDConfig)
 			}
-			ledConfig, exists := AppConfig.LEDs[key]
+			ledConfig, exists := cfg.AppConfig.LEDs[key]
 			if !exists {
-				ledConfig = LEDConfig{}
+				ledConfig = cfg.LEDConfig{}
 				Log.Println("Assign LEDConfig{}")
 			}
 			err := json.Unmarshal([]byte(msg.Payload()), &ledConfig)
 			if err != nil {
 				Log.Println("Error unmarshaling JSON:", err)
 			}
-			AppConfig.LEDs[key] = ledConfig
+			cfg.AppConfig.LEDs[key] = ledConfig
 			//Log.Infof("[%s] StatusLed: %s\n", key, AppConfig.LEDs[key].StatusLed)
 			//Log.Infof("[%s] RecLedOn: %v\n", key, AppConfig.LEDs[key].RecLedOn)
 		} else {
@@ -246,25 +247,25 @@ func mqttIn_Status_IO_Handler(client mqtt.Client, msg mqtt.Message) {
 
 func mqttIn_Status_Network_Handler(client mqtt.Client, msg mqtt.Message) {
 	Log.Debugf("Recv topic: %s, data: %s", msg.Topic(), msg.Payload())
-	err := json.Unmarshal([]byte(msg.Payload()), &AppConfig.Network)
+	err := json.Unmarshal([]byte(msg.Payload()), &cfg.AppConfig.Network)
 	if err != nil {
 		Log.Println("Error unmarshaling JSON:", err)
 	}
 
-	Log.Infof("Network:IPv4, IP=%s", AppConfig.Network.IPv4)
-	Log.Infof("Network:IPv6, IP=%s", AppConfig.Network.IPv6)
+	Log.Infof("Network:IPv4, IP=%s", cfg.AppConfig.Network.IPv4)
+	Log.Infof("Network:IPv6, IP=%s", cfg.AppConfig.Network.IPv6)
 }
 
 func mqttIn_Status_Sensor_Handler(client mqtt.Client, msg mqtt.Message) {
 	//{Mode: "Day/Night", Lux: <value>}
 	Log.Debugf("Recv topic: %s, data: %s", msg.Topic(), msg.Payload())
 
-	err := json.Unmarshal([]byte(msg.Payload()), &AppConfig.DayNightMode)
+	err := json.Unmarshal([]byte(msg.Payload()), &cfg.AppConfig.DayNightMode)
 	if err != nil {
 		Log.Println("Error unmarshaling JSON:", err)
 	}
 
-	Log.Infof("Mode=%s, Lux=%d", AppConfig.DayNightMode.Mode, AppConfig.DayNightMode.Lux)
+	Log.Infof("Mode=%s, Lux=%d", cfg.AppConfig.DayNightMode.Mode, cfg.AppConfig.DayNightMode.Lux)
 }
 
 func mqttIn_Status_Watermark_Handler(client mqtt.Client, msg mqtt.Message) {
@@ -286,20 +287,20 @@ func mqttIn_Status_Watermark_Handler(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 	if num < chanNum {
-		if AppConfig.Watermarks == nil {
-			AppConfig.Watermarks = make(map[string]WatermarkConfig)
+		if cfg.AppConfig.Watermarks == nil {
+			cfg.AppConfig.Watermarks = make(map[string]cfg.WatermarkConfig)
 		}
-		osdConfig, exists := AppConfig.Watermarks[key]
+		osdConfig, exists := cfg.AppConfig.Watermarks[key]
 		if !exists {
-			osdConfig = WatermarkConfig{}
+			osdConfig = cfg.WatermarkConfig{}
 			Log.Println("Assign WatermarkConfig{}")
 		}
 		err := json.Unmarshal([]byte(msg.Payload()), &osdConfig)
 		if err != nil {
 			Log.Infof("Error unmarshaling JSON:%v", err)
 		}
-		AppConfig.Watermarks[key] = osdConfig
-		Log.Println(AppConfig.Watermarks[key])
+		cfg.AppConfig.Watermarks[key] = osdConfig
+		Log.Println(cfg.AppConfig.Watermarks[key])
 	} else {
 		Log.Printf("Invalid Channel")
 	}

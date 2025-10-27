@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	pb "grpcd/canf22g2/grpc"
+	cfg "grpcd/config"
 	"time"
 )
 
@@ -13,10 +14,10 @@ type VideoInfoServer struct {
 
 func (s *VideoInfoServer) SetVideoSettings(ctx context.Context, in *pb.SetVideoSettingsRequest) (*pb.SetVideoSettingsResponse, error) {
 	channelKey := fmt.Sprintf("%d", in.Channel)
-	if AppConfig.Videos == nil {
-		AppConfig.Videos = make(map[string]VideoConfig)
+	if cfg.AppConfig.Videos == nil {
+		cfg.AppConfig.Videos = make(map[string]cfg.VideoConfig)
 	}
-	AppConfig.Videos[channelKey] = VideoConfig{
+	cfg.AppConfig.Videos[channelKey] = cfg.VideoConfig{
 		Resolution:      in.Resolution,
 		StreamFormat:    in.StreamFormat,
 		BitRate:         in.BitRate,
@@ -49,7 +50,7 @@ func (s *VideoInfoServer) SetVideoSettings(ctx context.Context, in *pb.SetVideoS
 func (s *VideoInfoServer) GetVideoSettings(ctx context.Context, in *pb.GetVideoSettingsRequest) (*pb.GetVideoSettingsResponse, error) {
 	Log.Info(">>Run")
 	channelKey := fmt.Sprintf("%d", in.Channel)
-	videoConfig, ok := AppConfig.Videos[channelKey]
+	videoConfig, ok := cfg.AppConfig.Videos[channelKey]
 	if !ok {
 		return nil, fmt.Errorf("video settings not found for channel %s", channelKey)
 	}

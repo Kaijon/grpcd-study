@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	pb "grpcd/canf22g2/grpc"
+	cfg "grpcd/config"
 	"io"
 	"os"
 	"os/exec"
@@ -73,7 +74,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 	var finalGood int
 	var finalBad int
 
-	serverID := AppConfig.System.SerialNo
+	serverID := cfg.AppConfig.System.SerialNo
 
 	for {
 		chunk, err := stream.Recv()
