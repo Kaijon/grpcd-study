@@ -98,7 +98,7 @@ func init() {
 	Log.SetOutput(io.MultiWriter(
 		os.Stdout,
 		&lumberjack.Logger{
-			Filename:   "/mnt/flash/logger_storage/APLog/grpcd.log",
+			Filename:   "/tmp/logger_storage/APLog/grpcd.log",
 			MaxSize:    1, // megabytes
 			MaxBackups: 5,
 			MaxAge:     1,     //days
