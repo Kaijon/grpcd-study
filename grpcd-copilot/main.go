@@ -87,23 +87,23 @@ func main() {
 	srv := grpc.NewServer()
 
 	// register statusLED server (inject config)
-	ledServer := &LEDServer{cfg: &cfg.AppConfig}
+	ledServer := &LEDServer{}
 	pb.RegisterLEDServiceServer(srv, ledServer)
 
 	// register DeviceInfo server
-	deviceInfoServer := &DeviceInfoServer{cfg: &cfg.AppConfig}
+	deviceInfoServer := &DeviceInfoServer{}
 	pb.RegisterDeviceInfoServiceServer(srv, deviceInfoServer)
 
 	// register NetworkInfo server
-	networkInfoServer := &NetworkInfoServer{cfg: &cfg.AppConfig}
+	networkInfoServer := &NetworkInfoServer{}
 	pb.RegisterNetworkInfoServiceServer(srv, networkInfoServer)
 
 	// register VideoInfo server
-	videoInfoServer := &VideoInfoServer{cfg: &cfg.AppConfig}
+	videoInfoServer := &VideoInfoServer{}
 	pb.RegisterVideoInfoServiceServer(srv, videoInfoServer)
 
 	// register WatermarkInfo server
-	watermarkInfoServer := &WatermarkInfoServer{cfg: &cfg.AppConfig}
+	watermarkInfoServer := &WatermarkInfoServer{}
 	pb.RegisterWatermarkInfoServiceServer(srv, watermarkInfoServer)
 
 	// register UnifiedFileTransfer server
@@ -111,10 +111,10 @@ func main() {
 	pb.RegisterUnifiedFileTransferServer(srv, unifiedFileTransferServer)
 
 	// register Lux server
-	luxServer := &LuxServer{cfg: &cfg.AppConfig}
+	luxServer := &LuxServer{}
 	pb.RegisterLuxServiceServer(srv, luxServer)
 
-	fotaServer := &FotaServer{cfg: &cfg.AppConfig}
+	fotaServer := &FotaServer{}
 	pb.RegisterFotaServiceServer(srv, fotaServer)
 
 	// Register reflection for debugging

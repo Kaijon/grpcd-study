@@ -10,18 +10,21 @@ import (
 
 type LEDServer struct {
 	pb.UnimplementedLEDServiceServer
-	cfg *cfg.Config
 }
 
 func (s *LEDServer) SetLEDs(ctx context.Context, in *pb.SetLEDsRequest) (*pb.SetLEDsResponse, error) {
 	channelKey := fmt.Sprintf("%d", in.Channel)
 	strStatus := in.StatusLedColor.String()
-	if s.cfg.LEDs == nil {
-		s.cfg.LEDs = make(map[string]cfg.LEDConfig)
-	}
-	s.cfg.LEDs[channelKey] = cfg.LEDConfig{
-		StatusLed: strStatus,
-		RecLedOn:  in.RecLedOn,
+	if err := cfg.UpdateConfig(func(c *cfg.Config) {
+		if c.LEDs == nil {
+			c.LEDs = make(map[string]cfg.LEDConfig)
+		}
+		c.LEDs[channelKey] = cfg.LEDConfig{
+			StatusLed: strStatus,
+			RecLedOn:  in.RecLedOn,
+		}
+	}); err != nil {
+		return nil, err
 	}
 	strTmp := fmt.Sprintf("{\"StatusLed\":\"%s\", \"RecLedOn\":%v}", strStatus, in.RecLedOn)
 	topic := fmt.Sprintf("config/io/led/%d", in.Channel)
@@ -40,7 +43,15 @@ func (s *LEDServer) SetLEDs(ctx context.Context, in *pb.SetLEDsRequest) (*pb.Set
 func (s *LEDServer) GetLEDs(ctx context.Context, in *pb.GetLEDsRequest) (*pb.GetLEDsResponse, error) {
 	Log.Info(">>Run")
 	channelKey := fmt.Sprintf("%d", in.Channel)
-	ledConfig, ok := s.cfg.LEDs[channelKey]
+	var (
+		ledConfig cfg.LEDConfig
+		ok        bool
+	)
+	cfg.ReadConfig(func(current cfg.Config) {
+		if current.LEDs != nil {
+			ledConfig, ok = current.LEDs[channelKey]
+		}
+	})
 	if !ok {
 		return nil, fmt.Errorf("channel %s not found", channelKey)
 	}

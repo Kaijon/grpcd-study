@@ -10,13 +10,20 @@ import (
 
 type WatermarkInfoServer struct {
 	pb.UnimplementedWatermarkInfoServiceServer
-	cfg *cfg.Config
 }
 
 func (s *WatermarkInfoServer) GetAllWatermarkInfo(ctx context.Context, req *pb.GetAllWatermarkInfoRequest) (*pb.GetAllWatermarkInfoResponse, error) {
 	Log.Info(">>Run")
 	channelKey := fmt.Sprintf("%d", req.Channel)
-	watermarkConfig, ok := s.cfg.Watermarks[channelKey]
+	var (
+		watermarkConfig cfg.WatermarkConfig
+		ok              bool
+	)
+	cfg.ReadConfig(func(current cfg.Config) {
+		if current.Watermarks != nil {
+			watermarkConfig, ok = current.Watermarks[channelKey]
+		}
+	})
 	if !ok {
 		return nil, fmt.Errorf("watermark settings not found for channel %s", channelKey)
 	}
@@ -38,33 +45,43 @@ func (s *WatermarkInfoServer) SetAllWatermarkInfo(ctx context.Context, req *pb.S
 	channelKey := fmt.Sprintf("%d", req.Channel)
 
 	var logo, expo bool
+	var previous cfg.WatermarkConfig
+	cfg.ReadConfig(func(current cfg.Config) {
+		if current.Watermarks != nil {
+			previous = current.Watermarks[channelKey]
+		}
+	})
 
 	if req.OptionLogo != nil {
 		logo = req.OptionLogo.GetValue()
 	} else {
-	logo = s.cfg.Watermarks[channelKey].OptionLogo
+		logo = previous.OptionLogo
 	}
 
 	if req.OptionExposure != nil {
 		expo = req.OptionExposure.GetValue()
 	} else {
-	expo = s.cfg.Watermarks[channelKey].OptionExposure
+		expo = previous.OptionExposure
 	}
 
 	strTmp := fmt.Sprintf("{\"Username\":\"%s\", \"OptionUserName\":%v, \"OptionDeviceName\":%v,\"OptionGPS\":%v,\"OptionTime\":%v,\"OptionLogo\":%v,\"OptionExposure\":%v}",
 		req.Username, req.OptionUserName, req.OptionDeviceName, req.OptionGPS, req.OptionTime, logo, expo)
 
-	if s.cfg.Watermarks == nil {
-		s.cfg.Watermarks = make(map[string]cfg.WatermarkConfig)
-	}
-	s.cfg.Watermarks[channelKey] = cfg.WatermarkConfig{
-		Username:         req.Username,
-		OptionUserName:   req.OptionUserName,
-		OptionDeviceName: req.OptionDeviceName,
-		OptionGPS:        req.OptionGPS,
-		OptionTime:       req.OptionTime,
-		OptionLogo:       logo,
-		OptionExposure:   expo,
+	if err := cfg.UpdateConfig(func(c *cfg.Config) {
+		if c.Watermarks == nil {
+			c.Watermarks = make(map[string]cfg.WatermarkConfig)
+		}
+		c.Watermarks[channelKey] = cfg.WatermarkConfig{
+			Username:         req.Username,
+			OptionUserName:   req.OptionUserName,
+			OptionDeviceName: req.OptionDeviceName,
+			OptionGPS:        req.OptionGPS,
+			OptionTime:       req.OptionTime,
+			OptionLogo:       logo,
+			OptionExposure:   expo,
+		}
+	}); err != nil {
+		return nil, err
 	}
 
 	topic := fmt.Sprintf("config/watermark/%d", req.Channel)

@@ -13,67 +13,66 @@ import (
 
 type DeviceInfoServer struct {
 	pb.UnimplementedDeviceInfoServiceServer
-	cfg *cfg.Config
 }
 
 func ConvertTZ(tz string) string {
-    if !strings.HasPrefix(tz, "UTC") {
-        return tz
-    }
+	if !strings.HasPrefix(tz, "UTC") {
+		return tz
+	}
 
-    // Remove "UTC"
-    offsetStr := tz[3:]
+	// Remove "UTC"
+	offsetStr := tz[3:]
 
-    // Remove "DST" or "DST,j0,j366"
-    if idx := strings.Index(offsetStr, "DST"); idx != -1 {
-        offsetStr = offsetStr[:idx]
-    }
+	// Remove "DST" or "DST,j0,j366"
+	if idx := strings.Index(offsetStr, "DST"); idx != -1 {
+		offsetStr = offsetStr[:idx]
+	}
 
-    sign := offsetStr[0]
-    offsetParts := strings.Split(offsetStr[1:], ":")
-    if len(offsetParts) != 2 {
-        return tz
-    }
+	sign := offsetStr[0]
+	offsetParts := strings.Split(offsetStr[1:], ":")
+	if len(offsetParts) != 2 {
+		return tz
+	}
 
-    hours := offsetParts[0]
-    minutes := offsetParts[1]
+	hours := offsetParts[0]
+	minutes := offsetParts[1]
 
-    newSign := '+'
-    if sign == '+' {
-        newSign = '-'
-    } else if sign == '-' {
-        newSign = '+'
-    }
+	newSign := '+'
+	if sign == '+' {
+		newSign = '-'
+	} else if sign == '-' {
+		newSign = '+'
+	}
 
-    result := fmt.Sprintf("%c%s:%s", newSign, hours, minutes)
+	result := fmt.Sprintf("%c%s:%s", newSign, hours, minutes)
 
-    return result
+	return result
 }
 
 func parseUTCOffset(tz string) (int, error) {
-    offsetStr := tz
-    sign := offsetStr[0]
-    offsetParts := strings.Split(offsetStr[1:], ":")
-    if len(offsetParts) != 2 {
-        return 0, fmt.Errorf("invalid TZ offset format")
-    }
+	offsetStr := tz
+	sign := offsetStr[0]
+	offsetParts := strings.Split(offsetStr[1:], ":")
+	if len(offsetParts) != 2 {
+		return 0, fmt.Errorf("invalid TZ offset format")
+	}
 
-    hours, err := strconv.Atoi(offsetParts[0])
-    if err != nil {
-        return 0, err
-    }
+	hours, err := strconv.Atoi(offsetParts[0])
+	if err != nil {
+		return 0, err
+	}
 
-    minutes, err := strconv.Atoi(offsetParts[1])
-    if err != nil {
-        return 0, err
-    }
+	minutes, err := strconv.Atoi(offsetParts[1])
+	if err != nil {
+		return 0, err
+	}
 
-    totalMinutes := hours*60 + minutes
-    if sign == '-' {
-        totalMinutes = -totalMinutes
-    }
+	totalMinutes := hours*60 + minutes
+	if sign == '-' {
+		totalMinutes = -totalMinutes
+	}
 
-    return totalMinutes * 60, nil
+	return totalMinutes * 60, nil
 }
 
 func getCurrentTimeStr() (string, error) {
@@ -82,8 +81,8 @@ func getCurrentTimeStr() (string, error) {
 	if tz == "" {
 		// Using a more specific error message is better than a generic one.
 		return "", fmt.Errorf("environment variable TZ is empty; cannot determine timezone")
-	}	
-	
+	}
+
 	hasDST := strings.Contains(tz, "DST")
 
 	// change sign and remove DST.
@@ -121,18 +120,27 @@ func (s *DeviceInfoServer) GetAllSystemInfo(ctx context.Context, in *pb.GetAllSy
 	}
 	Log.Infof("Get current time : %s", currentTimeStr)
 
+	var system cfg.SystemConfig
+	cfg.ReadConfig(func(current cfg.Config) {
+		system = current.System
+	})
+
 	return &pb.GetAllSystemInfoResponse{
-		FWVersion:  s.cfg.System.FWVersion,
-		Time:       currentTimeStr ,
-		SerialNo:   s.cfg.System.SerialNo,
-		SKUName:    s.cfg.System.SKUName,
-		DeviceName: s.cfg.System.DeviceName,
-		MAC:        s.cfg.System.MAC,
+		FWVersion:  system.FWVersion,
+		Time:       currentTimeStr,
+		SerialNo:   system.SerialNo,
+		SKUName:    system.SKUName,
+		DeviceName: system.DeviceName,
+		MAC:        system.MAC,
 	}, nil
 }
 
 func (s *DeviceInfoServer) SetTime(ctx context.Context, in *pb.SetTimeRequest) (*pb.SetTimeResponse, error) {
-	s.cfg.System.Time = in.Time
+	if err := cfg.UpdateConfig(func(c *cfg.Config) {
+		c.System.Time = in.Time
+	}); err != nil {
+		return nil, err
+	}
 	strTmp := fmt.Sprintf("{\"time\":\"%s\"}", in.Time)
 	msg := MqttMessage{
 		Topic:   "config/system/time",
@@ -161,7 +169,11 @@ func (s *DeviceInfoServer) RunCmd(ctx context.Context, in *pb.RunCmdRequest) (*p
 }
 
 func (s *DeviceInfoServer) SetAlprStatus(ctx context.Context, in *pb.SetAlprRequest) (*pb.SetAlprResponse, error) {
-	s.cfg.System.AlprEnabled = in.IsEnabled
+	if err := cfg.UpdateConfig(func(c *cfg.Config) {
+		c.System.AlprEnabled = in.IsEnabled
+	}); err != nil {
+		return nil, err
+	}
 	strTmp := fmt.Sprintf("{\"Enable\":\"%v\"}", in.IsEnabled)
 	msg := MqttMessage{
 		Topic:   "config/alpr",
@@ -172,10 +184,14 @@ func (s *DeviceInfoServer) SetAlprStatus(ctx context.Context, in *pb.SetAlprRequ
 	case <-time.After(50 * time.Millisecond):
 		Log.Warnf("Timed out sending message: %v", msg)
 	}
-	return &pb.SetAlprResponse{IsEnabled: s.cfg.System.AlprEnabled}, nil
+	return &pb.SetAlprResponse{IsEnabled: in.IsEnabled}, nil
 }
 
 func (s *DeviceInfoServer) GetAlprStatus(ctx context.Context, in *pb.GetAlprRequest) (*pb.GetAlprResponse, error) {
-	Log.Infof("ALPR enable=%v", s.cfg.System.AlprEnabled)
-	return &pb.GetAlprResponse{IsEnabled: s.cfg.System.AlprEnabled}, nil
+	var enabled bool
+	cfg.ReadConfig(func(current cfg.Config) {
+		enabled = current.System.AlprEnabled
+	})
+	Log.Infof("ALPR enable=%v", enabled)
+	return &pb.GetAlprResponse{IsEnabled: enabled}, nil
 }
