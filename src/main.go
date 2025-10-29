@@ -33,7 +33,7 @@ func main() {
 	StartMqttWorker()
 	// It is used on emulator
 	//LoadConfigDefault()
-	
+
 	// --- Create the main multiplexer ---
 	// This will route traffic to either the gRPC gateway or the Swagger UI
 	mainMux := http.NewServeMux()
@@ -116,11 +116,11 @@ func main() {
 
 	fotaServer := &FotaServer{cfg: &cfg.AppConfig}
 	pb.RegisterFotaServiceServer(srv, fotaServer)
-	
+
 	// Register reflection for debugging
-	reflection.Register(srv)	
+	reflection.Register(srv)
 	// start gRPC server
-	
+
 	Log.Printf("gRPC server is starting to listen on %s", grpcAddr)
 	go func() {
 		if err := srv.Serve(lis); err != nil {
@@ -147,7 +147,7 @@ func init() {
 	Log.SetOutput(io.MultiWriter(
 		os.Stdout,
 		&lumberjack.Logger{
-			Filename:   "/mnt/flash/logger_storage/APLog/grpcd.log",
+			Filename:   "/tmp/logger_storage/APLog/grpcd.log",
 			MaxSize:    1, // megabytes
 			MaxBackups: 15,
 			MaxAge:     1,     //days
