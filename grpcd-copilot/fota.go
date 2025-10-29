@@ -56,7 +56,6 @@ const (
 type FotaServer struct {
 	pb.UnimplementedFotaServiceServer
 	mu sync.Mutex // To protect shared state across clients
-	cfg *cfg.Config
 }
 
 var clientID string
@@ -75,7 +74,10 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 	var finalGood int
 	var finalBad int
 
-	serverID := s.cfg.System.SerialNo
+	var serverID string
+	cfg.ReadConfig(func(current cfg.Config) {
+		serverID = current.System.SerialNo
+	})
 
 	for {
 		chunk, err := stream.Recv()
@@ -240,7 +242,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 		}
 		jsonMsg, err := json.Marshal(msg)
 		if err != nil {
-			Log.Infof("Error marshalling JSON:", err)
+			Log.Infof("Error marshalling JSON: %v", err)
 		}
 		finalMessage := fmt.Sprintf("RESP:%s", string(jsonMsg))
 		stream.Send(&pb.FotaStatus{
@@ -256,7 +258,7 @@ func (s *FotaServer) Fota(stream pb.FotaService_FotaServer) error {
 		}
 		jsonMsg, err := json.Marshal(msg)
 		if err != nil {
-			Log.Infof("Error marshalling JSON:", err)
+			Log.Infof("Error marshalling JSON: %v", err)
 		}
 		finalMessage := fmt.Sprintf("RESP:%s", string(jsonMsg))
 
